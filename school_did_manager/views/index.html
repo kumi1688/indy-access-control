@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+    <head>
+      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" integrity="undefined" crossorigin="anonymous">
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.min.js" integrity="undefined" crossorigin="anonymous"></script>
+      <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+      <script src="https://cdn.socket.io/3.1.3/socket.io.min.js" integrity="sha384-cPwlPLvBTa3sKAgddT6krw0cJat7egBga3DJepJyrLl4Q9/5WLra3rrnMcyTyOnh" crossorigin="anonymous"></script>
+        <title>HyperLedger Indy Test</title>
+    </head>
+    <body>
+      <div class="d-flex justify-content-center">
+        <h2>대학교 정보 관리 페이지</h2>
+      </div>
+      <div class="d-flex justify-content-center">
+        <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist" >
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="connect-indy-node" data-bs-toggle="pill" data-bs-target="#connect-indy-node-status" type="button" role="tab" aria-controls="connect-indy-node-status" aria-selected="false">DID 생성 및 등록</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="make-schema" data-bs-toggle="pill" data-bs-target="#make-schema-status" type="button" role="tab" aria-controls="make-schema-status" aria-selected="false">Schema 생성</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="make-credential" data-bs-toggle="pill" data-bs-target="#make-credential-status" type="button" role="tab" aria-controls="make-credential-status" aria-selected="false">Credential Definition 생성</button>
+          </li>
+        </ul>
+      </div>
+      <div class="d-flex justify-content-center">
+        <div class="tab-content" id="pills-tabContent">
+          <div class="tab-pane fade show active" id="connect-indy-node-status" role="tabpanel" aria-labelledby="connect-indy-node-status"><pre id='connect-indy-node-status-pre'>...</pre></div>
+          <div class="tab-pane fade" id="make-schema-status" role="tabpanel" aria-labelledby="make-schema-status"><pre id='make-schema-status-pre'>...</pre></div>
+          <div class="tab-pane fade"  id="make-credential-status" role="tabpanel" aria-labelledby="make-credential-status"><pre id="make-credential-status-pre" style="max-width: 1000px;">...</pre></div>
+        </div>
+      </div>
+    </body>
+    <script>
+      const baseURL_Indy_Node = 'http://52.231.165.205:3000'
+      const baseURL_School = 'http://52.231.165.205:3002'
+      const baseURL_Lab = 'http://52.231.165.205:3003'
+      const baseURL_Enterance = 'http://52.231.165.205:3004'
+
+        init()
+        let is_click = {
+            connectIndy: false,
+            makeSchema: false,
+            makeCredential: false,
+        }
+        
+        function init(){
+            connectIndy()
+            makeSchema()
+            makeCredential()
+        }
+
+        function connectIndy(){
+            const tab = document.querySelector('#connect-indy-node')
+            tab.addEventListener('click', async (e)=>{
+                if(is_click.connectIndy) return
+                is_click.connectIndy = true
+                e.preventDefault()
+                let innerTab = document.querySelector('#connect-indy-node-status-pre')
+                innerTab.innerHTML = '블록체인 연결중...'
+                const res = await axios.get(`${baseURL_School}/connect_indy`)
+                const {msg, trustAnchorDid, trustAnchorVerkey} = res.data
+                // innerTab.innerHTML = `상태: ${msg}<br>trustAnchorDid: ${trustAnchorDid}<br>trustAnchorVerkey: ${trustAnchorVerkey}`
+                innerTab.innerHTML = JSON.stringify(res.data, null, 2)
+            })
+          }
+        
+        function makeSchema(){
+            const tab = document.querySelector('#make-schema')
+            tab.addEventListener('click', async (e)=>{
+                if(is_click.makeSchema) return
+                is_click.makeSchema = true
+                e.preventDefault()
+                let innerTab = document.querySelector('#make-schema-status-pre')
+                innerTab.innerHTML = '출입증 Schema 생성중...'
+                const res = await axios.get(`${baseURL_School}/make_schema`)
+                const {msg, schemaId, schema} = res.data
+                
+                innerTab.innerHTML = JSON.stringify(res.data, null, 2)
+                // console.log(Object.entries(schema))
+                
+                // let innerHTML = `상태: ${msg}<br>schemaId: ${schemaId}<br>`
+                // Object.entries(schema).forEach(entry=>{
+                //     innerHTML += `${entry[0]}: ${entry[1]}<br>`
+                // })
+                // innerTab.innerHTML = innerHTML
+            })    
+        }
+
+        function makeCredential(){
+            const tab = document.querySelector('#make-credential')
+            tab.addEventListener('click', async (e)=>{
+                if(is_click.makeCredential) return
+                is_click.makeCredential = true
+                e.preventDefault()
+                let innerTab = document.querySelector('#make-credential-status-pre')
+                innerTab.innerHTML = '출입증 Credential 생성중...'
+                const res = await axios.get(`${baseURL_School}/make_credential`)
+                const {msg, credDefId, credDef} = res.data
+                console.log(res.data)
+                
+                innerTab.innerHTML = JSON.stringify(res.data, null, 2)
+            })
+        }
+    </script>
+
+</html>
+

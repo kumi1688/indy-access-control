@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+    <head>
+      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" integrity="undefined" crossorigin="anonymous">
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.min.js" integrity="undefined" crossorigin="anonymous"></script>
+      <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+      <script src="https://cdn.socket.io/3.1.3/socket.io.min.js" integrity="sha384-cPwlPLvBTa3sKAgddT6krw0cJat7egBga3DJepJyrLl4Q9/5WLra3rrnMcyTyOnh" crossorigin="anonymous"></script>
+        <title>HyperLedger Indy Test</title>
+    </head>
+    <body>
+      <div class="d-flex justify-content-center">
+        <h2>출입관리소 정보 관리 페이지</h2>
+      </div>
+      <div class="d-flex justify-content-center">
+        <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist" >
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="a" data-bs-toggle="pill" data-bs-target="#a-status" type="button" role="tab" aria-controls="a-status" aria-selected="false">학교도서관 출입조건</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="b" data-bs-toggle="pill" data-bs-target="#b-status" type="button" role="tab" aria-controls="b-status" aria-selected="false">연구실 출입조건</button>
+          </li>
+        </ul>
+      </div>
+      <div class="d-flex justify-content-center">
+        <div class="tab-content" id="pills-tabContent">
+          <div class="tab-pane fade show active" id="a-status" role="tabpanel" aria-labelledby="a-status"><pre id='a-status-pre'>...</pre></div>
+          <div class="tab-pane fade" id="b-status" role="tabpanel" aria-labelledby="b-status"><pre id='b-status-pre' style='max-width: 1000px;'>...</pre></div>
+        </div>
+      </div>
+    </body>
+    <script>
+      const baseURL_Indy_Node = 'http://52.231.165.205:3000'
+      const baseURL_User = 'http://52.231.165.205:3001'
+      const baseURL_School = 'http://52.231.165.205:3002'
+      const baseURL_Lab = 'http://52.231.165.205:3003'
+      const baseURL_Enterance = 'http://52.231.165.205:3004'
+
+        init()
+        let is_click = {
+            library: false,
+            lab: false,
+            enterLibrary: false,
+            enterLab: false
+        }
+        
+        function init(){
+          showRequsite_school()
+          showRequsite_lab()
+        }
+
+        function showRequsite_school(){
+            const tab = document.querySelector('#a')
+            tab.addEventListener('click', async (e)=>{
+                if(is_click.library) return
+                is_click.library = true
+                e.preventDefault()
+                let innerTab = document.querySelector('#a-status-pre')
+                innerTab.innerHTML = '요구사항 보여주기...'
+                const res = await axios.get(`${baseURL_Enterance}/requsites/library`)
+                console.log(res.data)
+                innerTab.innerHTML = JSON.stringify(res.data, null, 2)
+            })
+            // /requsites/:type
+          }
+
+          function showRequsite_lab(){
+            const tab = document.querySelector('#b')
+            tab.addEventListener('click', async (e)=>{
+                if(is_click.lab) return
+                is_click.lab = true
+                e.preventDefault()
+                let innerTab = document.querySelector('#b-status-pre')
+                innerTab.innerHTML = '요구사항 보여주기...'
+                const res = await axios.get(`${baseURL_Enterance}/requsites/lab`)
+                console.log(res.data)
+                innerTab.innerHTML = JSON.stringify(res.data, null, 2)
+            })
+          }
+
+          function enterLibrary(){
+            const tab = document.querySelector('#c')
+            tab.addEventListener('click', async (e)=>{
+                if(is_click.lab) return
+                is_click.lab = true
+                e.preventDefault()
+                let innerTab = document.querySelector('#c-status-pre')
+                innerTab.innerHTML = '학교도서관 출입을 위한 VP 생성...'
+                const res = await axios.get(`${baseURL_Enterance}/make_VP/library`)
+                console.log(res.data)
+                innerTab.innerHTML = JSON.stringify(res.data, null, 2)
+            })
+          }
+    </script>
+
+</html>
+

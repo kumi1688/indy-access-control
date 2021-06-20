@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+    <head>
+      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" integrity="undefined" crossorigin="anonymous">
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.min.js" integrity="undefined" crossorigin="anonymous"></script>
+      <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+      <script src="https://cdn.socket.io/3.1.3/socket.io.min.js" integrity="sha384-cPwlPLvBTa3sKAgddT6krw0cJat7egBga3DJepJyrLl4Q9/5WLra3rrnMcyTyOnh" crossorigin="anonymous"></script>
+        <title>HyperLedger Indy Test</title>
+    </head>
+    <body>
+      <div class="d-flex justify-content-center">
+        <h2>유저 정보 관리 페이지</h2>
+      </div>
+      <div class="d-flex justify-content-center">
+        <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist" >
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="connect-indy-node" data-bs-toggle="pill" data-bs-target="#connect-indy-node-status" type="button" role="tab" aria-controls="connect-indy-node-status" aria-selected="false">DID 발급 및 등록</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="make-vc-school" data-bs-toggle="pill" data-bs-target="#make-vc-school-status" type="button" role="tab" aria-controls="make-vc-school-status" aria-selected="false">대학교 VC 생성</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="make-vc-lab" data-bs-toggle="pill" data-bs-target="#make-vc-lab-status" type="button" role="tab" aria-controls="make-vc-lab-status" aria-selected="false">연구실 VC 생성</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="make-vp-school" data-bs-toggle="pill" data-bs-target="#make-vp-school-status" type="button" role="tab" aria-controls="make-vp-school-status" aria-selected="false">학교 도서관 출입 VP 생성</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="make-vp-lab" data-bs-toggle="pill" data-bs-target="#make-vp-lab-status" type="button" role="tab" aria-controls="make-vp-lab-status" aria-selected="false">연구실 출입 VP 생성</button>
+          </li>
+        </ul>
+      </div>
+      <div class="d-flex justify-content-center">
+        <div class="tab-content" id="pills-tabContent">
+          <div class="tab-pane fade show active" id="connect-indy-node-status" role="tabpanel" aria-labelledby="connect-indy-node-status"><pre id='connect-indy-node-status-pre'>...</pre></div>
+          <div class="tab-pane fade" id="make-vc-school-status" role="tabpanel" aria-labelledby="make-vc-school-status"><pre id='make-vc-school-status-pre' style='max-width: 1000px;'>...</pre></div>
+          <div class="tab-pane fade" id="make-vc-lab-status" role="tabpanel" aria-labelledby="make-vc-lab-status"><pre id='make-vc-lab-status-pre' style='max-width: 1000px;'>...</pre></div>
+          <div class="tab-pane fade" id="make-vp-school-status" role="tabpanel" aria-labelledby="make-vp-school-status"><pre id='make-vp-school-status-pre' style='max-width: 1000px;'>...</pre></div>
+          <div class="tab-pane fade" id="make-vp-lab-status" role="tabpanel" aria-labelledby="make-vp-lab-status"><pre id='make-vp-lab-status-pre' style='max-width: 1000px;'>...</pre></div>
+        </div>
+      </div>
+    </body>
+    <script>
+      const baseURL_Indy_Node = 'http://52.231.165.205:3000'
+      const baseURL_User = 'http://52.231.165.205:3001'
+      const baseURL_School = 'http://52.231.165.205:3002'
+      const baseURL_Lab = 'http://52.231.165.205:3003'
+      const baseURL_Enterance = 'http://52.231.165.205:3004'
+
+        init()
+        let is_click = {
+            connectIndy: false,
+            makeVC_School: false,
+            makeVC_Lab: false,
+            makeVP_School: false,
+            makeVP_Lab:  false
+        }
+        
+        function init(){
+            connectIndy()
+            makeVC_School()
+            makeVC_Lab()
+            makeVP_School()
+            makeVP_Lab()
+        }
+
+        function connectIndy(){
+            const tab = document.querySelector('#connect-indy-node')
+            tab.addEventListener('click', async (e)=>{
+                if(is_click.connectIndy) return
+                is_click.connectIndy = true
+                e.preventDefault()
+                let innerTab = document.querySelector('#connect-indy-node-status-pre')
+                innerTab.innerHTML = 'DID 발급 및 등록중...'
+                const res = await axios.get(`${baseURL_User}/connect_indy`)
+                console.log(res.data)
+              
+                innerTab.innerHTML = JSON.stringify(res.data, null, 2)
+            })
+          }
+
+        function makeVC_School(){
+            const tab = document.querySelector('#make-vc-school')
+            tab.addEventListener('click', async (e)=>{
+                if(is_click.makeVC_School) return
+                is_click.makeVC_School = true
+                e.preventDefault()
+                let innerTab = document.querySelector('#make-vc-school-status-pre')
+                innerTab.innerHTML = '학생증 VC 생성중...'
+                
+                const res = await axios.get(`${baseURL_User}/make_school_VC`)
+                console.log(res.data)
+                
+                innerTab.innerHTML = JSON.stringify(res.data, null, 2)
+            })
+        }
+
+        function makeVC_Lab(){
+            const tab = document.querySelector('#make-vc-lab')
+            tab.addEventListener('click', async (e)=>{
+                if(is_click.makeVC_Lab) return
+                is_click.makeVC_Lab = true
+                e.preventDefault()
+                let innerTab = document.querySelector('#make-vc-lab-status-pre')
+                innerTab.innerHTML = '연구실 VC 생성중...'
+                
+                const res = await axios.get(`${baseURL_User}/make_lab_VC`)
+                console.log(res.data)
+                
+                innerTab.innerHTML = JSON.stringify(res.data, null, 2)
+            })
+        }
+
+        function makeVP_School(){
+            const tab = document.querySelector('#make-vp-school')
+            tab.addEventListener('click', async (e)=>{
+                if(is_click.makeVP_School) return
+                is_click.makeVP_School = true
+                e.preventDefault()
+                let innerTab = document.querySelector('#make-vp-school-status-pre')
+                innerTab.innerHTML = '출입증 VP 생성중...'
+                const res = await axios.get(`${baseURL_User}/make_enterance_VP/library`)
+                console.log(res.data)
+                
+                innerTab.innerHTML = JSON.stringify(res.data, null, 2)
+            })
+        }
+
+        function makeVP_Lab(){
+            const tab = document.querySelector('#make-vp-lab')
+            tab.addEventListener('click', async (e)=>{
+                if(is_click.makeVP_Lab) return
+                is_click.makeVP_Lab = true
+                e.preventDefault()
+                let innerTab = document.querySelector('#make-vp-lab-status-pre')
+                innerTab.innerHTML = '출입증 VP 생성중...'
+                const res = await axios.get(`${baseURL_User}/make_enterance_VP/lab`)
+                console.log(res.data)
+                
+                innerTab.innerHTML = JSON.stringify(res.data, null, 2)
+            })
+        }
+
+    </script>
+
+</html>
+
